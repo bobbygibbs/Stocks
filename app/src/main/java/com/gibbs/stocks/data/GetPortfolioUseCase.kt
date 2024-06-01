@@ -1,12 +1,20 @@
 package com.gibbs.stocks.data
 
+import com.gibbs.stocks.di.IoCoroutineDispatcher
 import com.gibbs.stocks.domain.StockPosition
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class GetPortfolioUseCase @Inject constructor(private val portfolioService: PortfolioService) {
+class GetPortfolioUseCase @Inject constructor(
+    @IoCoroutineDispatcher private val dispatcher: CoroutineDispatcher,
+    private val portfolioService: PortfolioService
+) {
     suspend operator fun invoke(): List<StockPosition>? =
         try {
-            portfolioService.getPortfolio().stocks?.mapToDomain()
+            withContext(dispatcher) {
+                portfolioService.getPortfolio()
+            }.stocks?.mapToDomain()
         } catch (e: Exception) {
             null
         }
