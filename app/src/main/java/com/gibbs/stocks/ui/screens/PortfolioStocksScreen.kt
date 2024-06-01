@@ -103,11 +103,12 @@ private fun PortfolioStocksContent(stocks: List<StockPosition>, modifier: Modifi
                         style = MaterialTheme.typography.headlineSmall
                     )
                     if (stock.quantity > 0) {
-                        Text(text = stringResource(R.string.x_shares, stock.quantity))
+                        Text(text = stringResource(R.string.x_shares, stock.quantity), color = MaterialTheme.colorScheme.primary)
                     }
                     Text(
                         text = SimpleDateFormat("M/dd/yy h:mm:ss aa", Locale.current.platformLocale).format(stock.time * 1000),
-                        style = MaterialTheme.typography.labelSmall
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.surfaceContainerLow
                     )
                 }
             }
