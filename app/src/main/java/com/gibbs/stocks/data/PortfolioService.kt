@@ -6,6 +6,6 @@ import javax.inject.Singleton
 @Singleton
 interface PortfolioService {
 
-    @GET("cash-stocks-api/portfolio.json")
+    @GET("cash-homework/cash-stocks-api/portfolio.json")
     suspend fun getPortfolio(): ApiPortfolioResponse
 }
