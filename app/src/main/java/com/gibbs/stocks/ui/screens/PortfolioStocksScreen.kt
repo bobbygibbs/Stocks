@@ -27,10 +27,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.gibbs.stocks.R
 import com.gibbs.stocks.domain.PortfolioStocksViewModel
 import com.gibbs.stocks.domain.StockPosition
 
@@ -43,7 +45,7 @@ internal fun PortfolioStocksScreen() {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
-            TopAppBar(title = { Text(text = "My Portfolio") })
+            TopAppBar(title = { Text(text = stringResource(R.string.my_portfolio)) })
         },
         content = { contentPadding ->
             val state = viewModel.state.collectAsState().value
@@ -56,9 +58,15 @@ internal fun PortfolioStocksScreen() {
                     .padding(contentPadding)
             ) {
                 state.stockPositions?.let { stocks ->
-                    PortfolioStocksContent(stocks)
+                    if (stocks.isNotEmpty()) {
+                        PortfolioStocksContent(stocks)
+                    } else {
+                        // We need to make the screen "scrollable" to enable the PullToRefreshBox behavior
+                        PortfolioStocksEmptyContent(modifier = Modifier.verticalScroll(rememberScrollState()))
+                    }
                 } ?: run {
-                    PortfolioStocksError()
+                    // We need to make the screen "scrollable" to enable the PullToRefreshBox behavior
+                    PortfolioStocksError(modifier = Modifier.verticalScroll(rememberScrollState()))
                 }
 
                 if (state.isLoading) {
@@ -78,21 +86,29 @@ private fun PortfolioStocksContent(stocks: List<StockPosition>, modifier: Modifi
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(stock.symbol, style = MaterialTheme.typography.titleLarge)
-                Text(stock.name, style = MaterialTheme.typography.bodySmall, modifier = modifier
-                    .weight(1f, false)
-                    .padding(horizontal = 16.dp), textAlign = TextAlign.Center)
+                Text(text = stock.symbol, style = MaterialTheme.typography.titleLarge)
+                Text(
+                    text = stock.name,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = modifier
+                        .weight(1f, false)
+                        .padding(horizontal = 16.dp),
+                    textAlign = TextAlign.Center
+                )
                 Column(horizontalAlignment = Alignment.End) {
                     Text(
-                        NumberFormat.getCurrencyInstance().apply {
-                            Currency.getInstance(stock.currency)
+                        text = NumberFormat.getCurrencyInstance().apply {
+                            currency = Currency.getInstance(stock.currency)
                         }.format(stock.tradingPrice),
                         style = MaterialTheme.typography.headlineSmall
                     )
                     if (stock.quantity > 0) {
-                        Text("${stock.quantity} shares")
+                        Text(text = stringResource(R.string.x_shares, stock.quantity))
                     }
-                    Text(SimpleDateFormat("M/dd/yy h:mm:ss aa", Locale.current.platformLocale).format(stock.time * 1000), style = MaterialTheme.typography.labelSmall)
+                    Text(
+                        text = SimpleDateFormat("M/dd/yy h:mm:ss aa", Locale.current.platformLocale).format(stock.time * 1000),
+                        style = MaterialTheme.typography.labelSmall
+                    )
                 }
             }
             if (index < stocks.lastIndex) {
@@ -104,10 +120,14 @@ private fun PortfolioStocksContent(stocks: List<StockPosition>, modifier: Modifi
 
 @Composable
 private fun PortfolioStocksError(modifier: Modifier = Modifier) {
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .verticalScroll(rememberScrollState())
-        .then(modifier)) {
-        Text(text = "Oh my, something has gone horribly askew!", modifier = Modifier.align(Alignment.Center))
+    Box(modifier = Modifier.fillMaxSize().then(modifier)) {
+        Text(text = stringResource(R.string.error_message), modifier = Modifier.align(Alignment.Center).padding(64.dp), textAlign = TextAlign.Center)
+    }
+}
+
+@Composable
+private fun PortfolioStocksEmptyContent(modifier: Modifier = Modifier) {
+    Box(modifier = Modifier.fillMaxSize().then(modifier)) {
+        Text(text = stringResource(R.string.empty_message), modifier = Modifier.align(Alignment.Center).padding(64.dp), textAlign = TextAlign.Center)
     }
 }
