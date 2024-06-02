@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Stoic</string>
+    <string name="my_portfolio">Mo Phunann</string>
+    <string name="x_shares">%d scaireanna</string>
+    <string name="error_message">Is mór an trua sin.</string>
+    <string name="empty_message">Níl aon torthaí ann.</string>
+</resources>

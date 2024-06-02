@@ -8,5 +8,5 @@ data class ApiStock(
     val currency: String?,
     @SerializedName("current_price_cents") val currentPriceCents: Int?,
     val quantity: Int?,
-    @SerializedName("current_price_timestamp") val currentPriceTimestamp: Int?,
+    @SerializedName("current_price_timestamp") val currentPriceTimestamp: Long?,
 )
